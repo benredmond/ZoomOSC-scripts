@@ -72,6 +72,7 @@ const spotlightHandRaised = () => {
 
     serverZoom.on('message', (msg) => {
         if (msg[0].split("/")[3] === 'list') {
+            usersProcessed++;
             const handRaised = msg[11];
             if (handRaised === 1)
                 userList.push(msg[4]);
