@@ -24,9 +24,7 @@ const muteNonCohosts = () => {
 
     serverZoom.on('message', (msg) => {
         if (msg[0].split("/")[3] === 'list') {
-            // console.log(msg);
             const userRole = msg[7];
-            // const handRaised = msg[11];
 
             // 1 is host
             // 2 is cohost
@@ -34,6 +32,7 @@ const muteNonCohosts = () => {
                 userList.push(msg[4]);
 
         } else if (msg[0] === '/zoomosc/galleryOrder') { // Finished listing users
+            console.log(userList)
             if (userList.length === 0) {
                 console.log("Error: No co-hosts found");
                 serverZoom.close()
@@ -61,6 +60,7 @@ const spotlightHandRaised = () => {
                 userList.push(msg[4]);
 
         } else if (msg[0] === '/zoomosc/galleryOrder') { // Finished listing users
+            console.log(userList)
             if (userList.length === 0) {
                 console.log("Error: Noone with hands raised");
                 serverZoom.close()
