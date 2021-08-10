@@ -14,6 +14,7 @@ const zoomOSCPortOut = 9090;
 const clientZoom = new Client(zoomOSCClientIp, zoomOSCPortOut);
 
 const muteNonCohosts = () => {
+    console.log("here")
     let userList = [];
     const serverZoom = new Server(zoomOSCPortIn, zoomOSCServerIp);
 
@@ -21,6 +22,7 @@ const muteNonCohosts = () => {
     clientZoom.send('/zoom/list', () => {
         userList = [];
     });
+    console.log("sent commands")
 
     serverZoom.on('message', (msg) => {
         if (msg[0].split("/")[3] === 'list') {
