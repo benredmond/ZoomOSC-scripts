@@ -25,6 +25,8 @@ const muteNonCohosts = () => {
     console.log("sent commands")
 
     serverZoom.on('message', (msg) => {
+        console.log("got response")
+        console.log(msg)
         if (msg[0].split("/")[3] === 'list') {
             const userRole = msg[7];
 
