@@ -14,15 +14,14 @@ const zoomOSCPortOut = 9090;
 const clientZoom = new Client(zoomOSCClientIp, zoomOSCPortOut);
 
 const muteNonCohosts = () => {
-    console.log("here")
     let userList = [];
     const serverZoom = new Server(zoomOSCPortIn, zoomOSCServerIp);
 
     clientZoom.send('/zoom/update')
+    clientZoom.send('/zoom/include')
     clientZoom.send('/zoom/list', () => {
         userList = [];
     });
-    console.log("sent commands")
 
     serverZoom.on('message', (msg) => {
         console.log("got response")
@@ -35,16 +34,27 @@ const muteNonCohosts = () => {
             if (userRole === 2)
                 userList.push(msg[4]);
 
-        } else if (msg[0] === '/zoomosc/galleryOrder') { // Finished listing users
-            console.log(userList)
-            if (userList.length === 0) {
-                console.log("Error: No co-hosts found");
+            if (userList.length === msg[5]) {
+                console.log(userList)
+                if (userList.length === 0) {
+                    console.log("Error: No co-hosts found");
+                    serverZoom.close()
+                    return;
+                }
+                clientZoom.send('/zoom/allExcept/zoomID/mute', ...userList)
                 serverZoom.close()
-                return;
             }
-            clientZoom.send('/zoom/allExcept/zoomID/mute', ...userList)
-            serverZoom.close()
         }
+        // else if (msg[0] === '/zoomosc/galleryOrder') { // Finished listing users
+        //     console.log(userList)
+        //     if (userList.length === 0) {
+        //         console.log("Error: No co-hosts found");
+        //         serverZoom.close()
+        //         return;
+        //     }
+        //     clientZoom.send('/zoom/allExcept/zoomID/mute', ...userList)
+        //     serverZoom.close()
+        // }
     });
 }
 
