@@ -16,6 +16,7 @@ const clientZoom = new Client(zoomOSCClientIp, zoomOSCPortOut);
 const muteNonCohosts = () => {
     let userList = [];
     let usersProcessed = 0;
+
     const serverZoom = new Server(zoomOSCPortIn, zoomOSCServerIp);
 
     clientZoom.send('/zoom/update');
@@ -25,8 +26,6 @@ const muteNonCohosts = () => {
     // });
 
     serverZoom.on('message', (msg) => {
-        console.log("got response")
-        console.log(msg)
         if (msg[0].split("/")[3] === 'list') {
             usersProcessed++;
             const userRole = msg[7];
@@ -62,12 +61,14 @@ const muteNonCohosts = () => {
 
 const spotlightHandRaised = () => {
     let userList = [];
+    let usersProcessed = 0;
+
     const serverZoom = new Server(zoomOSCPortIn, zoomOSCServerIp);
 
     clientZoom.send('/zoom/update')
-    clientZoom.send('/zoom/list', () => {
-        userList = [];
-    });
+    // clientZoom.send('/zoom/list', () => {
+    //     userList = [];
+    // });
 
     serverZoom.on('message', (msg) => {
         if (msg[0].split("/")[3] === 'list') {
@@ -75,17 +76,18 @@ const spotlightHandRaised = () => {
             if (handRaised === 1)
                 userList.push(msg[4]);
 
-        } else if (msg[0] === '/zoomosc/galleryOrder') { // Finished listing users
-            console.log(userList)
-            if (userList.length === 0) {
-                console.log("Error: Noone with hands raised");
+            if (usersProcessed === msg[5]) {
+                console.log(userList)
+                if (userList.length === 0) {
+                    console.log("Error: Noone with hands raised");
+                    serverZoom.close()
+                    return;
+                }
+                for (const zoomID of userList) {
+                    clientZoom.send('/zoom/zoomID/addSpot', zoomID)
+                }
                 serverZoom.close()
-                return;
             }
-            for (const zoomID of userList) {
-                clientZoom.send('/zoom/zoomID/addSpot', zoomID)
-            }
-            serverZoom.close()
         }
     });
 }
