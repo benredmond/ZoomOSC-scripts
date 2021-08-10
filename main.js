@@ -17,8 +17,8 @@ const muteNonCohosts = () => {
     let userList = [];
     const serverZoom = new Server(zoomOSCPortIn, zoomOSCServerIp);
 
-    clientZoom.send('/zoom/update')
-    clientZoom.send('/zoom/include')
+    // clientZoom.send('/zoom/update');
+    // clientZoom.send('/zoom/include');
     clientZoom.send('/zoom/list', () => {
         userList = [];
     });
